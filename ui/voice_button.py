@@ -13,6 +13,7 @@ class AssistantButton(QPushButton):
         self._animation = QPropertyAnimation(self, b"size")
         self._is_recording = False
         self._is_processing = False
+        self._is_answering = False
         self._is_hovered = False
         
         icon_path = os.path.join(os.path.dirname(__file__), "..", "resources", "microphone.svg")
@@ -26,6 +27,8 @@ class AssistantButton(QPushButton):
             painter.setBrush(QColor(COLORS["warning"]))
         elif self._is_processing:    
             painter.setBrush(QColor(COLORS["helper"]))
+        elif self._is_answering:
+            painter.setBrush(QColor(COLORS["helper-intense"]))
         elif self._is_hovered:
             painter.setBrush(QColor(COLORS["primary-lighter"]))
         else:
@@ -46,4 +49,8 @@ class AssistantButton(QPushButton):
 
     def set_processing(self, is_processing):
         self._is_processing = is_processing
-        self.update()    
+        self.update()  
+
+    def set_answering(self, is_answering):
+        self._is_answering = is_answering
+        self.update()       

@@ -6,6 +6,7 @@ COLORS = {
     "secondary": "#0b0c18",
     "black": "#000000",
     "helper": "#ca5a8b",
+    "helper-intense": "#d81b60",
     "action": "#f2b347",
     "warning": "#ff6900",
     "white": "#ffffff",
