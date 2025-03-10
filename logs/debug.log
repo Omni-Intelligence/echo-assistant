@@ -1,0 +1,9 @@
+2025-03-10 16:25:55,434 - utils.api - ERROR - Error loading API key: 'ApiService' object has no attribute 'api_key'
+2025-03-10 16:26:04,723 - utils.api - INFO - Saving API key to /var/www/html/python/echo-assist/.env
+2025-03-10 16:26:15,912 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-03-10 16:28:28,443 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/utils/.env
+2025-03-10 16:28:28,443 - utils.api - WARNING - No valid API key found in .env file
+2025-03-10 16:28:39,259 - utils.api - INFO - Saving API key to /var/www/html/python/echo-assist/.env
+2025-03-10 16:28:54,586 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 16:35:02,358 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-10 16:35:02,358 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env

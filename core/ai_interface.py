@@ -1,19 +1,19 @@
 import speech_recognition as sr
-import json
-import urllib.request
-import urllib.parse
+from openai import OpenAI
+from utils.api import ApiService
+
 
 class AIInterface:
     def __init__(self):
         self.recognizer = sr.Recognizer()
+        api_service = ApiService()
+        self.api_key = api_service.api_key
 
     def process_command(self, audio_file):
-        # Convert audio to text
         text = self._speech_to_text(audio_file)
         if not text:
             return "Sorry, I couldn't understand that."
 
-        # Process with AI (mock implementation)
         response = self._get_ai_response(text)
         return response
 
@@ -27,5 +27,23 @@ class AIInterface:
             return None
 
     def _get_ai_response(self, text):
-        # Mock AI response - replace with actual AI service integration
-        return f"You said: {text}"
+        try: 
+            client = OpenAI(api_key=self.api_key)
+
+            system_prompt = "You are a helpful, friendly assistant. \
+                Provide concise, accurate, and helpful responses that can be read with voice. \
+                Avoid unnecessary details or lengthy explanations unless specifically requested."
+            
+            response = client.chat.completions.create(
+                model="o3-mini",  
+                messages=[
+                    {"role": "developer", "content": system_prompt},
+                    {"role": "user", "content": text}
+                ],
+            )
+
+            return response.choices[0].message.content.strip()
+        
+        except Exception as e:
+            self.logger.error(f"Error getting AI response: {str(e)}")
+            return "Sorry, I encountered an error while processing your request."
