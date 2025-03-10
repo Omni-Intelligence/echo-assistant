@@ -7,3 +7,19 @@
 2025-03-10 16:28:54,586 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 2025-03-10 16:35:02,358 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
 2025-03-10 16:35:02,358 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-10 17:57:22,583 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-10 17:57:22,584 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-10 17:57:35,823 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 18:13:06,179 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-10 18:13:06,179 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-10 18:14:34,415 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-10 18:14:34,415 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-10 18:15:16,251 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-10 18:15:16,251 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-10 18:15:28,501 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 18:19:57,033 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-10 18:19:57,034 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-10 18:20:09,776 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-10 18:21:10,965 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-10 18:21:10,966 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-10 18:21:24,359 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"

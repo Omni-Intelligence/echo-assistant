@@ -77,7 +77,7 @@ class AudioManager:
         elif self.system == "Darwin":
             subprocess.run(['pkill', '-f', 'rec'])
             
-        time.sleep(0.5)  # Allow time for the file to be written
+        time.sleep(0.5)
         return self.temp_file.name
 
     def play_response(self, text):

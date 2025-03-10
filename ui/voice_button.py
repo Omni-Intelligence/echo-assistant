@@ -12,18 +12,11 @@ class AssistantButton(QPushButton):
         self.setStyleSheet(f"border-radius: 50px; background-color: {COLORS['primary']};")
         self._animation = QPropertyAnimation(self, b"size")
         self._is_recording = False
+        self._is_processing = False
         self._is_hovered = False
         
         icon_path = os.path.join(os.path.dirname(__file__), "..", "resources", "microphone.svg")
         self.icon_renderer = QSvgRenderer(icon_path)
-
-    def enterEvent(self, event):
-        self._is_hovered = True
-        self.update()
-
-    def leaveEvent(self, event):
-        self._is_hovered = False
-        self.update()
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -31,6 +24,8 @@ class AssistantButton(QPushButton):
         
         if self._is_recording:
             painter.setBrush(QColor(COLORS["warning"]))
+        elif self._is_processing:    
+            painter.setBrush(QColor(COLORS["helper"]))
         elif self._is_hovered:
             painter.setBrush(QColor(COLORS["primary-lighter"]))
         else:
@@ -48,3 +43,7 @@ class AssistantButton(QPushButton):
     def set_recording(self, is_recording):
         self._is_recording = is_recording
         self.update()
+
+    def set_processing(self, is_processing):
+        self._is_processing = is_processing
+        self.update()    

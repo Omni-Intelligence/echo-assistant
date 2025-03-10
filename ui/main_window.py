@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QApplication
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
 from ui.voice_button import AssistantButton
@@ -67,11 +67,25 @@ class MainWindow(QMainWindow):
         self.audio_manager.start_recording()
 
     def stop_recording(self):
+    
         self.assistant_button.set_recording(False)
-        self.instruction_label.setText("Press button or space key to start")
-        audio_data = self.audio_manager.stop_recording()
-        self.process_audio(audio_data)
+        self.assistant_button.set_processing(True)
+        self.instruction_label.setText("Processing your request...")
+
+        QApplication.processEvents()
+
+        try:    
+            audio_data = self.audio_manager.stop_recording()
+            self.process_audio(audio_data)
+        finally:
+            self.assistant_button.set_processing(False)
+            self.instruction_label.setText("Press button or space key to start")
+
 
     def process_audio(self, audio_data):
-        response = self.ai_interface.process_command(audio_data)
-        self.audio_manager.play_response(response)
+        try:
+            response = self.ai_interface.process_command(audio_data)
+            self.audio_manager.play_response(response)
+        except Exception as e:
+            self.instruction_label.setText("Error processing audio")
+            print(f"Error processing audio: {e}")
