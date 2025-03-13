@@ -1,9 +1,10 @@
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QApplication, QTextEdit, QPushButton
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QApplication
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
 from ui.voice_button import AssistantButton
 from core.constants import COLORS
-from utils.text_response_handler import TextResponseHandler
+from handlers.text_response import TextResponseHandler
+from handlers.timer_counter import TimerCounterHandler
 
 class MainWindow(QMainWindow):
     def __init__(self, audio_manager, ai_interface):
@@ -15,10 +16,7 @@ class MainWindow(QMainWindow):
         self.current_response = ""
         self.is_expanded = False
 
-        self.remaining_time = 120
-        self.timer = QTimer()
-        self.timer.setInterval(1000)
-        self.timer.timeout.connect(self.update_timer)
+        self.timer = TimerCounterHandler(self)
 
         self.setup_ui()
 
@@ -55,27 +53,10 @@ class MainWindow(QMainWindow):
         layout.addStretch()
 
         self.trh.response_text_setup(self, layout)
-
-        self.timer_label = QLabel("")
-        self.timer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.timer_label.setStyleSheet(f"""
-            QLabel {{
-                color: {COLORS["white"]};
-                font-size: 14px;
-                margin-top: 10px;
-            }}
-        """)
-        self.timer_label.setVisible(False)
-        layout.addWidget(self.timer_label)
+        self.timer.setup_timer_counter(layout)
         
         self.assistant_button.clicked.connect(self.toggle_recording)
-        self.assistant_button.setFocus()
-
-    def update_timer(self):
-        self.remaining_time -= 1
-        self.timer_label.setText(f"Time remaining: {self.remaining_time} seconds")
-        if self.remaining_time <= 0:
-            self.stop_recording()    
+        self.assistant_button.setFocus()   
 
     def answering(self):
         self.assistant_button.set_processing(False)
@@ -95,18 +76,13 @@ class MainWindow(QMainWindow):
 
     def start_recording(self):
         self.trh.reset(self)
-
         self.assistant_button.set_recording(True)
         self.instruction_label.setText("Press button or space key to finish recording")
-        self.remaining_time = 120
-        self.timer_label.setVisible(True)
-        self.timer_label.setText(f"Time remaining: {self.remaining_time} seconds")
-        self.timer.start()
+        self.timer.start_timer()
         self.audio_manager.start_recording()
 
     def stop_recording(self):
-        self.timer.stop()
-        self.timer_label.setVisible(False)
+        self.timer.stop_timer()
         self.assistant_button.set_recording(False)
         self.assistant_button.set_processing(True)
         self.instruction_label.setText("Processing your request...")

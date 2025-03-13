@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QPushButton
-from PyQt6.QtCore import Qt, QPropertyAnimation, QSize, QRectF, QPointF
-from PyQt6.QtGui import QPainter, QColor, QRadialGradient
+from PyQt6.QtCore import Qt, QPropertyAnimation, QRectF
+from PyQt6.QtGui import QPainter, QColor
 from PyQt6.QtSvg import QSvgRenderer
 from core.constants import COLORS
 import os

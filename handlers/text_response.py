@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QApplication, QTextEdit, QPushButton
-from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QPalette, QColor
+from PyQt6.QtWidgets import QTextEdit, QPushButton
 from core.constants import COLORS
 
 class TextResponseHandler:
@@ -11,7 +9,7 @@ class TextResponseHandler:
     def reset(self, parent):
         parent.show_text_button.setVisible(False)
         parent.response_text.setVisible(False)
-        parent.is_expanded = False
+        # parent.is_expanded = False
         parent.setFixedSize(300, 400)    
 
     def response_text_setup(self, parent, layout):

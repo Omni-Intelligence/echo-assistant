@@ -267,3 +267,37 @@
 2025-03-13 10:50:23,228 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
 2025-03-13 10:50:51,712 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 2025-03-13 10:50:53,248 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-03-13 11:04:22,652 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:04:22,652 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:04:22,741 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:04:22,741 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:05:20,894 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:05:20,894 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:05:20,999 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:05:20,999 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:05:42,027 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:05:42,027 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:05:42,115 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:05:42,115 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:05:58,684 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-13 11:06:00,151 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-03-13 11:07:08,526 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:07:08,527 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:07:08,647 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:07:08,647 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:07:25,178 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-13 11:07:26,832 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-03-13 11:09:49,755 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:09:49,755 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:09:49,876 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:09:49,876 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:10:07,687 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-13 11:10:08,941 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-03-13 11:10:36,090 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:10:36,090 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:10:36,211 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-13 11:10:36,212 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-13 11:10:57,348 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-13 11:10:58,794 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
+2025-03-13 11:12:22,065 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-13 11:12:28,214 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/audio/speech "HTTP/1.1 200 OK"
