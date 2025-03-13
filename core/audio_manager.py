@@ -3,29 +3,17 @@ import threading
 import tempfile
 import os
 import time
-import pyttsx3
 import subprocess
 from datetime import datetime
-from openai import OpenAI
-from utils.api import ApiService
 from PyQt6.QtWidgets import QApplication
 
 class AudioManager:
-    def __init__(self):
+    def __init__(self, api_service):
         self.is_recording = False
-        self.tts_engine = pyttsx3.init()
+        self.temp_file = None
         self.system = platform.system()
         self.max_duration = 120  
         self.recording_start_time = None
-        api_service = ApiService()
-
-        try:
-            self.openai_client = OpenAI(api_key=api_service.api_key)
-            self.use_openai_tts = True
-            self.openai_voice = "alloy"  #(options: alloy, echo, fable, onyx, nova, shimmer)
-        except Exception as e:
-            print(f"OpenAI TTS initialization failed: {e}")
-            self.use_openai_tts = False
 
     def start_recording(self):
         """Start recording audio using platform-specific methods"""
@@ -84,58 +72,25 @@ class AudioManager:
             
         time.sleep(0.5)
         return self.temp_file.name
-    
-    def play_audio_file(self, file_path):
+
+    def play_response(self, audio_path, parent):
         """Play audio file using platform-specific methods"""
+
+        parent.assistant_button.set_processing(False)
+        parent.assistant_button.set_answering(True)
+        parent.instruction_label.setText("Answering...")
+        QApplication.processEvents() 
+                
         try:
             if self.system == "Linux":
-                subprocess.run(['ffplay', '-nodisp', '-autoexit', file_path], check=True)
+                subprocess.run(['ffplay', '-nodisp', '-autoexit', audio_path], check=True)
             elif self.system == "Windows":
                 from winsound import PlaySound, SND_FILENAME
-                PlaySound(file_path, SND_FILENAME)
+                PlaySound(audio_path, SND_FILENAME)
             elif self.system == "Darwin": 
-                subprocess.run(['afplay', file_path], check=True)
+                subprocess.run(['afplay', audio_path], check=True)
         except Exception as e:
             print(f"Error playing audio file: {e}")
 
-    def play_response(self, text, parent):
-        """Play response using OpenAI TTS or fall back to pyttsx3"""
-
-        print(text, self.use_openai_tts)
-        if self.use_openai_tts:
-            try:
-                with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as temp_audio:
-                    temp_audio_path = temp_audio.name
-                
-                response = self.openai_client.audio.speech.create(
-                    model="tts-1",
-                    voice=self.openai_voice,
-                    input=text
-                )
-                
-                response.stream_to_file(temp_audio_path)
-
-                parent.assistant_button.set_processing(False)
-                parent.assistant_button.set_answering(True)
-                parent.instruction_label.setText("Answering...")
-                QApplication.processEvents() 
-                
-                self.play_audio_file(temp_audio_path)
-
-                os.remove(temp_audio_path)
-                    
-            except Exception as e:
-                print(f"OpenAI TTS failed: {e}, falling back to pyttsx3")
-  
-                try:
-                    self.tts_engine.say(text)
-                    self.tts_engine.runAndWait()
-                except Exception as e2:
-                    print(f"Assistant: {text}")
-        else:
- 
-            try:
-                self.tts_engine.say(text)
-                self.tts_engine.runAndWait()
-            except Exception as e:
-                print(f"Assistant: {text}")
+        os.remove(self.temp_file.name)
+        os.remove(audio_path)        

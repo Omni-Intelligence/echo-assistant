@@ -100,8 +100,8 @@ class MainWindow(QMainWindow):
     def process_audio(self, audio_data):
         try:
             response = self.ai_interface.process_command(audio_data)
-            self.trh.update_response(self, response)
-            self.audio_manager.play_response(response, self)
+            self.trh.update_response(self, response['text'])
+            self.audio_manager.play_response(response['audio_path'], self)
             self.show_text_button.setVisible(True)
         except Exception as e:
             self.instruction_label.setText("Error processing audio")

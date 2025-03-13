@@ -8,8 +8,9 @@ class TextResponseHandler:
 
     def reset(self, parent):
         parent.show_text_button.setVisible(False)
+        parent.show_text_button.setText("Show as text")
         parent.response_text.setVisible(False)
-        # parent.is_expanded = False
+        parent.is_expanded = False
         parent.setFixedSize(300, 400)    
 
     def response_text_setup(self, parent, layout):
