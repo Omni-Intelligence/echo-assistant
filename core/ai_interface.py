@@ -2,12 +2,11 @@ import base64
 import logging
 import os
 import tempfile
-import speech_recognition as sr
 from openai import OpenAI
 
 class AIInterface:
     def __init__(self, api_service):
-        self.recognizer = sr.Recognizer()
+        self.recognizer = None
         self.api_key = api_service.api_key
         self.logger = logging.getLogger(__name__)
 
@@ -20,6 +19,8 @@ class AIInterface:
         return response
 
     def _speech_to_text(self, audio_file):
+        import speech_recognition as sr
+        self.recognizer = sr.Recognizer()
         try:
             with sr.AudioFile(audio_file) as source:
                 audio = self.recognizer.record(source)

@@ -4,6 +4,7 @@ from PyQt6.QtGui import QPainter, QColor
 from PyQt6.QtSvg import QSvgRenderer
 from core.constants import COLORS
 import os
+import sys
 
 class AssistantButton(QPushButton):
     def __init__(self):
@@ -16,8 +17,10 @@ class AssistantButton(QPushButton):
         self._is_answering = False
         self._is_hovered = False
         
-        icon_path = os.path.join(os.path.dirname(__file__), "..", "resources", "microphone.svg")
-        self.icon_renderer = QSvgRenderer(icon_path)
+        icon_path = os.path.join(os.path.dirname(__file__), "..", "resources")
+        if getattr(sys, 'frozen', False):
+            icon_path = os.path.join(sys._MEIPASS, "resources")
+        self.icon_renderer = QSvgRenderer(os.path.join(icon_path, "microphone.svg"))
 
     def paintEvent(self, event):
         painter = QPainter(self)
