@@ -3,19 +3,23 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QPalette, QColor
 from ui.voice_button import AssistantButton
 from core.constants import COLORS
-import time
+from utils.text_response_handler import TextResponseHandler
 
 class MainWindow(QMainWindow):
     def __init__(self, audio_manager, ai_interface):
         super().__init__()
         self.audio_manager = audio_manager
         self.ai_interface = ai_interface
+
+        self.trh = TextResponseHandler()
         self.current_response = ""
         self.is_expanded = False
+
         self.remaining_time = 120
         self.timer = QTimer()
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.update_timer)
+
         self.setup_ui()
 
     def setup_ui(self):
@@ -50,38 +54,7 @@ class MainWindow(QMainWindow):
 
         layout.addStretch()
 
-        self.response_text = QTextEdit()
-        self.response_text.setReadOnly(True)
-        self.response_text.setStyleSheet(f"""
-            QTextEdit {{
-                background-color: {COLORS["secondary"]};
-                color: {COLORS["white"]};
-                border-radius: 5px;
-                padding: 10px;
-                font-size: 12px;
-            }}
-        """)
-        self.response_text.setVisible(False)
-        layout.addWidget(self.response_text)
-
-        self.show_text_button = QPushButton("Show as text")
-        self.show_text_button.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {COLORS["primary"]};
-                color: {COLORS["white"]};
-                border: none;
-                border-radius: 15px;
-                padding: 8px 15px;
-                font-size: 12px;
-            }}
-            QPushButton:hover {{
-                background-color: {COLORS["primary-lighter"]};
-            }}
-        """)
-        self.show_text_button.setEnabled(True)
-        self.show_text_button.clicked.connect(self.toggle_text_display)
-        self.show_text_button.setVisible(False)
-        layout.addWidget(self.show_text_button)
+        self.trh.response_text_setup(self, layout)
 
         self.timer_label = QLabel("")
         self.timer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -112,7 +85,7 @@ class MainWindow(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Space:
-            self.toggle_recording()
+            self.toggle_recording()  
 
     def toggle_recording(self):
         if not self.audio_manager.is_recording:
@@ -121,8 +94,8 @@ class MainWindow(QMainWindow):
             self.stop_recording()
 
     def start_recording(self):
-        self.show_text_button.setVisible(False)
-        self.response_text.setVisible(False)
+        self.trh.reset(self)
+
         self.assistant_button.set_recording(True)
         self.instruction_label.setText("Press button or space key to finish recording")
         self.remaining_time = 120
@@ -151,23 +124,9 @@ class MainWindow(QMainWindow):
     def process_audio(self, audio_data):
         try:
             response = self.ai_interface.process_command(audio_data)
-            self.current_response = response 
-            self.response_text.setText(response)
+            self.trh.update_response(self, response)
             self.audio_manager.play_response(response, self)
             self.show_text_button.setVisible(True)
         except Exception as e:
             self.instruction_label.setText("Error processing audio")
             print(f"Error processing audio: {e}")
-            
-    def toggle_text_display(self):
-        self.is_expanded = not self.is_expanded
-        
-        if self.is_expanded:
-            self.setFixedSize(300, 600)  
-            self.response_text.setVisible(True)
-            self.response_text.setText(self.current_response)
-            self.show_text_button.setText("Hide text")
-        else:
-            self.setFixedSize(300, 400)  
-            self.response_text.setVisible(False)
-            self.show_text_button.setText("Show as text")
