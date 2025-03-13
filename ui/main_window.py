@@ -12,6 +12,10 @@ class MainWindow(QMainWindow):
         self.ai_interface = ai_interface
         self.current_response = ""
         self.is_expanded = False
+        self.remaining_time = 120
+        self.timer = QTimer()
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.update_timer)
         self.setup_ui()
 
     def setup_ui(self):
@@ -78,9 +82,27 @@ class MainWindow(QMainWindow):
         self.show_text_button.clicked.connect(self.toggle_text_display)
         self.show_text_button.setVisible(False)
         layout.addWidget(self.show_text_button)
+
+        self.timer_label = QLabel("")
+        self.timer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.timer_label.setStyleSheet(f"""
+            QLabel {{
+                color: {COLORS["white"]};
+                font-size: 14px;
+                margin-top: 10px;
+            }}
+        """)
+        self.timer_label.setVisible(False)
+        layout.addWidget(self.timer_label)
         
         self.assistant_button.clicked.connect(self.toggle_recording)
         self.assistant_button.setFocus()
+
+    def update_timer(self):
+        self.remaining_time -= 1
+        self.timer_label.setText(f"Time remaining: {self.remaining_time} seconds")
+        if self.remaining_time <= 0:
+            self.stop_recording()    
 
     def answering(self):
         self.assistant_button.set_processing(False)
@@ -102,10 +124,15 @@ class MainWindow(QMainWindow):
         self.show_text_button.setVisible(False)
         self.assistant_button.set_recording(True)
         self.instruction_label.setText("Press button or space key to finish recording")
+        self.remaining_time = 120
+        self.timer_label.setVisible(True)
+        self.timer_label.setText(f"Time remaining: {self.remaining_time} seconds")
+        self.timer.start()
         self.audio_manager.start_recording()
 
     def stop_recording(self):
-    
+        self.timer.stop()
+        self.timer_label.setVisible(False)
         self.assistant_button.set_recording(False)
         self.assistant_button.set_processing(True)
         self.instruction_label.setText("Processing your request...")
