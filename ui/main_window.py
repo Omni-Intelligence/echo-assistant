@@ -122,6 +122,7 @@ class MainWindow(QMainWindow):
 
     def start_recording(self):
         self.show_text_button.setVisible(False)
+        self.response_text.setVisible(False)
         self.assistant_button.set_recording(True)
         self.instruction_label.setText("Press button or space key to finish recording")
         self.remaining_time = 120
@@ -151,12 +152,8 @@ class MainWindow(QMainWindow):
         try:
             response = self.ai_interface.process_command(audio_data)
             self.current_response = response 
-            if self.is_expanded:
-                self.response_text.setText(response)
-
-            QTimer.singleShot(1000, self.answering) 
-
-            self.audio_manager.play_response(response)
+            self.response_text.setText(response)
+            self.audio_manager.play_response(response, self)
             self.show_text_button.setVisible(True)
         except Exception as e:
             self.instruction_label.setText("Error processing audio")

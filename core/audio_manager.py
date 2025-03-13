@@ -8,6 +8,7 @@ import subprocess
 from datetime import datetime
 from openai import OpenAI
 from utils.api import ApiService
+from PyQt6.QtWidgets import QApplication
 
 class AudioManager:
     def __init__(self):
@@ -97,7 +98,7 @@ class AudioManager:
         except Exception as e:
             print(f"Error playing audio file: {e}")
 
-    def play_response(self, text):
+    def play_response(self, text, parent):
         """Play response using OpenAI TTS or fall back to pyttsx3"""
 
         print(text, self.use_openai_tts)
@@ -113,6 +114,11 @@ class AudioManager:
                 )
                 
                 response.stream_to_file(temp_audio_path)
+
+                parent.assistant_button.set_processing(False)
+                parent.assistant_button.set_answering(True)
+                parent.instruction_label.setText("Answering...")
+                QApplication.processEvents() 
                 
                 self.play_audio_file(temp_audio_path)
 
