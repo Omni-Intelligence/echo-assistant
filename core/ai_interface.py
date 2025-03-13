@@ -11,12 +11,12 @@ class AIInterface:
         self.api_key = api_service.api_key
         self.logger = logging.getLogger(__name__)
 
-    def process_command(self, audio_file):
+    def process_command(self, audio_file, selected_voice):
         # text = self._speech_to_text(audio_file)
         # if not text:
         #     return "Sorry, I couldn't understand that."
 
-        response = self._get_ai_response(audio_file)
+        response = self._get_ai_response(audio_file, selected_voice)
         return response
 
     def _speech_to_text(self, audio_file):
@@ -28,7 +28,7 @@ class AIInterface:
             print(f"Error in speech recognition: {e}")
             return None
 
-    def _get_ai_response(self, file_path):
+    def _get_ai_response(self, file_path, voice="ballad"):
         try: 
             client = OpenAI(api_key=self.api_key)
 
@@ -47,7 +47,7 @@ class AIInterface:
                 modalities=["text", "audio"],
                 audio={
                     "format": "wav",
-                    "voice": "ballad",
+                    "voice": voice,
                 },
                 messages=[
                     {"role": "system", "content": system_prompt},
