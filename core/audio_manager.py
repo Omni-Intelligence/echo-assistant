@@ -4,6 +4,8 @@ import tempfile
 import os
 import time
 import subprocess
+import sounddevice as sd
+import soundfile as sf
 from datetime import datetime
 from PyQt6.QtWidgets import QApplication
 
@@ -31,14 +33,28 @@ class AudioManager:
                     self.temp_file.name
                 ], capture_output=True)
             elif self.system == "Windows":
-                ps_script = '''
-                Add-Type -AssemblyName System.Speech
-                $rec = New-Object System.Speech.Recognition.SpeechRecognitionEngine
-                $rec.SetInputToDefaultAudioDevice()
-                $rec.Record()
-                Start-Sleep -Seconds 60
-                '''
-                subprocess.run(['powershell', '-Command', ps_script], capture_output=True)
+                try:
+                    recording = sd.rec(
+                        int(self.max_duration * self.sample_rate),
+                        samplerate=self.sample_rate,
+                        channels=1,
+                        dtype='float32'
+                    )
+                    
+                    while self.is_recording and sd.get_stream().active:
+                        sd.wait()
+                    
+                    sd.stop()
+                    
+                    if len(recording) > 0:
+                        sf.write(
+                            self.temp_file.name, 
+                            recording[:int((datetime.now() - self.recording_start_time).total_seconds() * self.sample_rate)], 
+                            self.sample_rate
+                        )
+                except Exception as e:
+                    print(f"Error recording audio: {e}")
+                    self.is_recording = False
             elif self.system == "Darwin":
                 subprocess.run([
                     'rec',

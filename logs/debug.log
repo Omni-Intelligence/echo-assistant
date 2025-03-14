@@ -2,3 +2,6 @@
 2025-03-13 20:33:01,120 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
 2025-03-13 20:33:13,143 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
 2025-03-13 20:33:13,144 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-14 12:53:51,736 - utils.api - INFO - Looking for .env at: /var/www/html/python/echo-assist/.env
+2025-03-14 12:53:51,736 - utils.api - INFO - Loading .env from: /var/www/html/python/echo-assist/.env
+2025-03-14 12:54:11,465 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
