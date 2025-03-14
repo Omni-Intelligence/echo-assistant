@@ -6,6 +6,7 @@ import time
 import subprocess
 import sounddevice as sd
 import soundfile as sf
+import logging
 from datetime import datetime
 from PyQt6.QtWidgets import QApplication
 
@@ -16,6 +17,9 @@ class AudioManager:
         self.system = platform.system()
         self.max_duration = 120  
         self.recording_start_time = None
+        self.sample_rate = 44100
+        self.logger = logging.getLogger(__name__)
+        logging.basicConfig(level=logging.DEBUG)
 
     def start_recording(self):
         """Start recording audio using platform-specific methods"""
@@ -34,27 +38,35 @@ class AudioManager:
                 ], capture_output=True)
             elif self.system == "Windows":
                 try:
+                    self.logger.debug("Starting Windows audio recording...")
                     recording = sd.rec(
                         int(self.max_duration * self.sample_rate),
                         samplerate=self.sample_rate,
                         channels=1,
-                        dtype='float32'
+                        dtype="float32",
                     )
-                    
+
                     while self.is_recording and sd.get_stream().active:
-                        sd.wait()
-                    
+                        time.sleep(0.1)
+
                     sd.stop()
                     
                     if len(recording) > 0:
+                        duration = (
+                            datetime.now() - self.recording_start_time
+                        ).total_seconds()
+                        samples = int(duration * self.sample_rate)
+                        self.logger.debug(
+                            f"Saving {samples} samples to {self.temp_file.name}"
+                        )
                         sf.write(
-                            self.temp_file.name, 
-                            recording[:int((datetime.now() - self.recording_start_time).total_seconds() * self.sample_rate)], 
-                            self.sample_rate
+                            self.temp_file.name, recording[:samples], self.sample_rate
                         )
                 except Exception as e:
-                    print(f"Error recording audio: {e}")
+                    self.logger.error(f"Error in Windows recording: {str(e)}")
                     self.is_recording = False
+                    print(f"Error recording audio: {e}")
+                    
             elif self.system == "Darwin":
                 subprocess.run([
                     'rec',
@@ -82,12 +94,19 @@ class AudioManager:
         if self.system == "Linux":
             subprocess.run(['pkill', '-f', 'arecord'])
         elif self.system == "Windows":
-            subprocess.run(['taskkill', '/IM', 'powershell.exe', '/F'])
+            self.logger.debug("Stopping Windows recording...")
+            sd.stop()
         elif self.system == "Darwin":
             subprocess.run(['pkill', '-f', 'rec'])
             
         time.sleep(0.5)
-        return self.temp_file.name
+        
+        if os.path.exists(self.temp_file.name):
+            self.logger.debug(f"Recording saved to: {self.temp_file.name}")
+            return self.temp_file.name
+        else:
+            self.logger.error("Recording file was not created")
+            return None
 
     def play_response(self, audio_path, parent):
         """Play audio file using platform-specific methods"""
