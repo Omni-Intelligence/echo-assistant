@@ -10,6 +10,7 @@ httpcore==1.0.7
 httpx==0.28.1
 idna==3.10
 jiter==0.8.2
+Markdown==3.7
 numpy==2.2.3
 openai==1.65.5
 pycparser==2.22

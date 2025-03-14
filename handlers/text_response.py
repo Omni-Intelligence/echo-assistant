@@ -1,9 +1,16 @@
-from PyQt6.QtWidgets import QTextEdit, QPushButton, QHBoxLayout, QWidget, QApplication
+from PyQt6.QtWidgets import (
+    QTextBrowser,
+    QPushButton,
+    QHBoxLayout,
+    QWidget,
+    QApplication,
+)
 from PyQt6.QtGui import QIcon
 from core.constants import COLORS
+import markdown
+
 
 class TextResponseHandler:
-
     def __init__(self):
         super().__init__()
 
@@ -13,18 +20,30 @@ class TextResponseHandler:
         parent.show_text_button.setText("Show as text")
         parent.response_text.setVisible(False)
         parent.is_expanded = False
-        parent.setFixedSize(300, 400)    
+        parent.setFixedSize(300, 400)
 
     def response_text_setup(self, parent, layout):
-        parent.response_text = QTextEdit()
-        parent.response_text.setReadOnly(True)
+        parent.response_text = QTextBrowser()
+        parent.response_text.setOpenExternalLinks(True)
         parent.response_text.setStyleSheet(f"""
-            QTextEdit {{
+            QTextBrowser {{
                 background-color: {COLORS["secondary"]};
                 color: {COLORS["white"]};
                 border-radius: 5px;
-                padding: 10px;
+                padding: 5px;
                 font-size: 12px;
+                line-height: 1.4;
+            }}
+            QTextBrowser p {{
+                margin: 8px 0;
+            }}
+            QTextBrowser ul, QTextBrowser ol {{
+                margin-left: 15px;
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }}
+            QTextBrowser li {{
+                margin: 4px 0;
             }}
             QScrollBar:vertical {{
                 border: none;
@@ -71,7 +90,9 @@ class TextResponseHandler:
             }}
         """)
         parent.show_text_button.setEnabled(True)
-        parent.show_text_button.clicked.connect(lambda: self.toggle_text_display(parent))
+        parent.show_text_button.clicked.connect(
+            lambda: self.toggle_text_display(parent)
+        )
         parent.show_text_button.setVisible(False)
         buttons_layout.addWidget(parent.show_text_button)
 
@@ -97,27 +118,40 @@ class TextResponseHandler:
         buttons_layout.addWidget(parent.copy_button)
 
         layout.addWidget(buttons_widget)
-        
+
     def copy_to_clipboard(self, parent):
         clipboard = QApplication.clipboard()
-        clipboard.setText(parent.current_response)    
+        clipboard.setText(parent.current_response)
+
+    def format_markdown(self, text):
+        html_content = markdown.markdown(
+            text, extensions=["extra", "nl2br", "sane_lists"]
+        )
+
+        return f"""
+            <div style="white-space: pre-wrap;">
+                {html_content}
+            </div>
+        """
 
     def toggle_text_display(self, parent):
         parent.is_expanded = not parent.is_expanded
-        
+
         if parent.is_expanded:
-            parent.setFixedSize(300, 600)  
-            parent.response_text.setText(parent.current_response)
+            parent.setFixedSize(300, 600)
+            html_content = self.format_markdown(parent.current_response)
+            parent.response_text.setHtml(html_content)
             parent.response_text.setVisible(True)
             parent.show_text_button.setText("Hide text")
         else:
-            parent.setFixedSize(300, 400)  
+            parent.setFixedSize(300, 400)
             parent.response_text.setVisible(False)
-            parent.show_text_button.setText("Show as text")    
+            parent.show_text_button.setText("Show as text")
 
     def update_response(self, parent, response):
         parent.current_response = response
         if parent.is_expanded:
-            parent.response_text.setText(response)
+            html_content = self.format_markdown(response)
+            parent.response_text.setHtml(html_content)
         parent.show_text_button.setVisible(True)
-        parent.copy_button.setVisible(True)  
+        parent.copy_button.setVisible(True)
