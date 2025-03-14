@@ -62,6 +62,7 @@ class AudioManager:
                         sf.write(
                             self.temp_file.name, recording[:samples], self.sample_rate
                         )
+                        sf.SoundFile(self.temp_file.name).close()
                 except Exception as e:
                     self.logger.error(f"Error in Windows recording: {str(e)}")
                     self.is_recording = False
@@ -120,12 +121,20 @@ class AudioManager:
             if self.system == "Linux":
                 subprocess.run(['ffplay', '-nodisp', '-autoexit', audio_path], check=True)
             elif self.system == "Windows":
-                from winsound import PlaySound, SND_FILENAME
-                PlaySound(audio_path, SND_FILENAME)
+                data, samplerate = sf.read(audio_path)
+                sd.play(data, samplerate)
+                sd.wait()
             elif self.system == "Darwin": 
                 subprocess.run(['afplay', audio_path], check=True)
         except Exception as e:
             print(f"Error playing audio file: {e}")
 
-        os.remove(self.temp_file.name)
-        os.remove(audio_path)        
+        
+        try:
+            if os.path.exists(audio_path):
+                os.remove(audio_path)
+            if os.path.exists(self.temp_file.name):
+                os.remove(self.temp_file.name)    
+        except Exception as e:
+            print(f"Error removing audio file: {e}")
+    
