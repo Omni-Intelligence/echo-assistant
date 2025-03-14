@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QTextEdit, QPushButton
+from PyQt6.QtWidgets import QTextEdit, QPushButton, QHBoxLayout, QWidget, QApplication
+from PyQt6.QtGui import QIcon
 from core.constants import COLORS
 
 class TextResponseHandler:
@@ -8,6 +9,7 @@ class TextResponseHandler:
 
     def reset(self, parent):
         parent.show_text_button.setVisible(False)
+        parent.copy_button.setVisible(False)
         parent.show_text_button.setText("Show as text")
         parent.response_text.setVisible(False)
         parent.is_expanded = False
@@ -24,9 +26,35 @@ class TextResponseHandler:
                 padding: 10px;
                 font-size: 12px;
             }}
+            QScrollBar:vertical {{
+                border: none;
+                background: {COLORS["secondary"]};
+                width: 8px;
+                margin: 0px;
+                border-radius: 4px;
+            }}
+            QScrollBar::handle:vertical {{
+                background: {COLORS["primary"]};
+                min-height: 20px;
+                border-radius: 4px;
+            }}
+            QScrollBar::add-line:vertical {{
+                height: 0px;
+            }}
+            QScrollBar::sub-line:vertical {{
+                height: 0px;
+            }}
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{
+                background: none;
+            }}
         """)
         parent.response_text.setVisible(False)
         layout.addWidget(parent.response_text)
+
+        buttons_widget = QWidget()
+        buttons_layout = QHBoxLayout(buttons_widget)
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_layout.setSpacing(10)
 
         parent.show_text_button = QPushButton("Show as text")
         parent.show_text_button.setStyleSheet(f"""
@@ -45,7 +73,34 @@ class TextResponseHandler:
         parent.show_text_button.setEnabled(True)
         parent.show_text_button.clicked.connect(lambda: self.toggle_text_display(parent))
         parent.show_text_button.setVisible(False)
-        layout.addWidget(parent.show_text_button)
+        buttons_layout.addWidget(parent.show_text_button)
+
+        parent.copy_button = QPushButton()
+        parent.copy_button.setIcon(QIcon.fromTheme("edit-copy"))
+        parent.copy_button.setToolTip("Copy to clipboard")
+        parent.copy_button.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {COLORS["primary"]};
+                color: {COLORS["white"]};
+                border: none;
+                border-radius: 15px;
+                padding: 8px;
+                min-width: 30px;
+                max-width: 30px;
+            }}
+            QPushButton:hover {{
+                background-color: {COLORS["primary-lighter"]};
+            }}
+        """)
+        parent.copy_button.clicked.connect(lambda: self.copy_to_clipboard(parent))
+        parent.copy_button.setVisible(False)
+        buttons_layout.addWidget(parent.copy_button)
+
+        layout.addWidget(buttons_widget)
+        
+    def copy_to_clipboard(self, parent):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(parent.current_response)    
 
     def toggle_text_display(self, parent):
         parent.is_expanded = not parent.is_expanded
@@ -64,4 +119,5 @@ class TextResponseHandler:
         parent.current_response = response
         if parent.is_expanded:
             parent.response_text.setText(response)
-        # parent.show_text_button.setVisible(True)   
+        parent.show_text_button.setVisible(True)
+        parent.copy_button.setVisible(True)  
