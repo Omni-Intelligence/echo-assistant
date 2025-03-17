@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import (
     QApplication,
 )
 from PyQt6.QtGui import QIcon
-from PyQt6.QtCore import QTimer, QThread, pyqtSignal
+from PyQt6.QtCore import QThread, pyqtSignal
 from core.constants import COLORS
 import markdown
 
@@ -190,5 +190,5 @@ class CopyThread(QThread):
         super().__init__(parent)
 
     def run(self):
-        self.msleep(1000)
+        self.msleep(1500)
         self.finished.emit()

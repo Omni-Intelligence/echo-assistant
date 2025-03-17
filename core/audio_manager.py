@@ -9,6 +9,7 @@ import soundfile as sf
 import logging
 from datetime import datetime
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QThread, pyqtSignal
 
 class AudioManager:
     def __init__(self, api_service):
@@ -116,25 +117,46 @@ class AudioManager:
         parent.assistant_button.set_answering(True)
         parent.instruction_label.setText("Answering...")
         QApplication.processEvents() 
-                
+
+        def cleanup():
+            try:
+                if os.path.exists(audio_path):
+                    os.remove(audio_path)
+                if os.path.exists(self.temp_file.name):
+                    os.remove(self.temp_file.name)    
+            except Exception as e:
+                print(f"Error removing audio file: {e}")
+
+        self.playback_thread = PlaybackThread(self.system, audio_path)
+        self.playback_thread.finished.connect(cleanup)
+        self.playback_thread.error.connect(
+            lambda e: self.logger.error(f"Error playing audio: {e}")
+        )
+        self.playback_thread.start()        
+    
+
+class PlaybackThread(QThread):
+    finished = pyqtSignal()
+    error = pyqtSignal(str)
+
+    def __init__(self, system, audio_path, parent=None):
+        super().__init__(parent)
+        self.system = system
+        self.audio_path = audio_path
+
+    def run(self):
         try:
             if self.system == "Linux":
-                subprocess.run(['ffplay', '-nodisp', '-autoexit', audio_path], check=True)
+                subprocess.run(
+                    ["ffplay", "-nodisp", "-autoexit", self.audio_path], check=True
+                )
             elif self.system == "Windows":
-                data, samplerate = sf.read(audio_path)
+                data, samplerate = sf.read(self.audio_path)
                 sd.play(data, samplerate)
                 sd.wait()
-            elif self.system == "Darwin": 
-                subprocess.run(['afplay', audio_path], check=True)
+            elif self.system == "Darwin":
+                subprocess.run(["afplay", self.audio_path], check=True)
+            self.finished.emit()
         except Exception as e:
-            print(f"Error playing audio file: {e}")
-
-        
-        try:
-            if os.path.exists(audio_path):
-                os.remove(audio_path)
-            if os.path.exists(self.temp_file.name):
-                os.remove(self.temp_file.name)    
-        except Exception as e:
-            print(f"Error removing audio file: {e}")
+            self.error.emit(str(e))            
     
