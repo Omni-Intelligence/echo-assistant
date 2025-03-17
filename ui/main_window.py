@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(central_widget)
         layout.setContentsMargins(20, 20, 20, 20)
 
-        self.instruction_label = QLabel("Press mic button or space key to start")
+        self.instruction_label = QLabel("Press mic button or Ctrl+Space to start")
         self.instruction_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.instruction_label.setStyleSheet(f"""
             QLabel {{
@@ -97,9 +97,11 @@ class MainWindow(QMainWindow):
         self.assistant_button.clicked.connect(self.toggle_recording)
         self.assistant_button.setFocus()
 
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_Space:
-            self.toggle_recording()
+        def focusChanged(old, new):
+            if new not in [self.assistant_button, None]:
+                self.assistant_button.setFocus()
+    
+        QApplication.instance().focusChanged.connect(focusChanged)
 
     def toggle_recording(self):
         if not self.audio_manager.is_recording:
@@ -110,7 +112,9 @@ class MainWindow(QMainWindow):
     def start_recording(self):
         self.trh.reset(self)
         self.assistant_button.set_recording(True)
-        self.instruction_label.setText("Press mic button or space key to finish recording")
+        self.instruction_label.setText(
+            "Press mic button or Ctrl+Space to finish recording"
+        )
         self.voice_selector.setEnabled(False)
         self.voice_selector.setVisible(False)
         self.timer.start_timer()
@@ -131,7 +135,7 @@ class MainWindow(QMainWindow):
             self.voice_selector.setVisible(True)
             self.assistant_button.set_processing(False)
             self.assistant_button.set_answering(False)
-            self.instruction_label.setText("Press mic button or space key to start")
+            self.instruction_label.setText("Press mic button or Ctrl+Space to start")
 
     def process_audio(self, audio_data):
         try:

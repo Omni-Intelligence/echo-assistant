@@ -11,6 +11,7 @@ class AssistantButton(QPushButton):
         super().__init__()
         self.setFixedSize(120, 120)
         self.setStyleSheet(f"border-radius: 50px; background-color: {COLORS['primary']};")
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self._animation = QPropertyAnimation(self, b"size")
         self._is_recording = False
         self._is_processing = False
@@ -21,6 +22,18 @@ class AssistantButton(QPushButton):
         if getattr(sys, 'frozen', False):
             icon_path = os.path.join(sys._MEIPASS, "resources")
         self.icon_renderer = QSvgRenderer(os.path.join(icon_path, "microphone.svg"))
+
+    def keyPressEvent(self, event):
+        if (
+            event.key() == Qt.Key.Key_Space
+            and event.modifiers() & Qt.KeyboardModifier.ControlModifier
+            and not (event.modifiers() & ~Qt.KeyboardModifier.ControlModifier)
+        ):
+            self.clicked.emit()
+            event.accept()
+            return
+        
+        event.ignore()  
 
     def paintEvent(self, event):
         painter = QPainter(self)

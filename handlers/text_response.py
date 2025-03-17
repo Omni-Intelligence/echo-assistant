@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import (
     QApplication,
 )
 from PyQt6.QtGui import QIcon
-from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from core.constants import COLORS
 import markdown
 
@@ -76,6 +76,7 @@ class TextResponseHandler:
         buttons_layout.setSpacing(10)
 
         parent.show_text_button = QPushButton("Show as text")
+        parent.show_text_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         parent.show_text_button.setStyleSheet(f"""
             QPushButton {{
                 background-color: {COLORS["primary"]};
@@ -98,6 +99,7 @@ class TextResponseHandler:
 
         parent.copy_button = QPushButton()
         parent.copy_button.setIcon(QIcon.fromTheme("edit-copy"))
+        parent.show_text_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         parent.copy_button.setToolTip("Copy to clipboard")
         parent.copy_button.setStyleSheet(f"""
             QPushButton {{
@@ -145,8 +147,6 @@ class TextResponseHandler:
             lambda: parent.copy_button.setStyleSheet(original_style)
         )
         self.copy_thread.start()
-
-
 
     def format_markdown(self, text):
         html_content = markdown.markdown(
