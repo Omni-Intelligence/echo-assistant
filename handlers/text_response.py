@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
     QApplication,
 )
 from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import QTimer, QThread, pyqtSignal
 from core.constants import COLORS
 import markdown
 
@@ -38,7 +39,6 @@ class TextResponseHandler:
                 margin: 8px 0;
             }}
             QTextBrowser ul, QTextBrowser ol {{
-                margin-left: 15px;
                 margin-top: 8px;
                 margin-bottom: 8px;
             }}
@@ -123,6 +123,31 @@ class TextResponseHandler:
         clipboard = QApplication.clipboard()
         clipboard.setText(parent.current_response)
 
+        original_style = parent.copy_button.styleSheet()
+
+        parent.copy_button.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {COLORS["primary-dark"]};
+                color: {COLORS["white"]};
+                border: none;
+                border-radius: 15px;
+                padding: 8px;
+                min-width: 30px;
+                max-width: 30px;
+            }}
+            QPushButton:hover {{
+                background-color: {COLORS["primary-lighter"]};
+            }}
+        """)
+
+        self.copy_thread = CopyThread()
+        self.copy_thread.finished.connect(
+            lambda: parent.copy_button.setStyleSheet(original_style)
+        )
+        self.copy_thread.start()
+
+
+
     def format_markdown(self, text):
         html_content = markdown.markdown(
             text, extensions=["extra", "nl2br", "sane_lists"]
@@ -150,8 +175,20 @@ class TextResponseHandler:
 
     def update_response(self, parent, response):
         parent.current_response = response
+        clipboard = QApplication.clipboard()
+        clipboard.setText(response)
         if parent.is_expanded:
             html_content = self.format_markdown(response)
             parent.response_text.setHtml(html_content)
         parent.show_text_button.setVisible(True)
         parent.copy_button.setVisible(True)
+
+class CopyThread(QThread):
+    finished = pyqtSignal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def run(self):
+        self.msleep(1000)
+        self.finished.emit()
