@@ -63,6 +63,8 @@ class MainWindow(QMainWindow):
         self.timer.setup_timer_counter(layout)
 
         self.voice_selector = QComboBox()
+        self.voice_selector.addItem("Select a voice")
+        self.voice_selector.setItemData(0, 0, role=Qt.ItemDataRole.UserRole - 1)
         self.voice_selector.addItems(
             ["alloy", "ash", "ballad", "coral", "echo", "sage", "shimmer"]
         )
@@ -140,6 +142,8 @@ class MainWindow(QMainWindow):
     def process_audio(self, audio_data):
         try:
             selected_voice = self.voice_selector.currentText()
+            if selected_voice == "Select a voice":
+                selected_voice = "alloy"
             response = self.ai_interface.process_command(audio_data, selected_voice)
             self.trh.update_response(self, response["text"])
             self.audio_manager.play_response(response["audio_path"], self)

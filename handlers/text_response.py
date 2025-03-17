@@ -22,6 +22,7 @@ class TextResponseHandler:
         parent.response_text.setVisible(False)
         parent.is_expanded = False
         parent.setFixedSize(300, 400)
+        parent.copy_button.setStyleSheet(self.default_copy_button_style())
 
     def response_text_setup(self, parent, layout):
         parent.response_text = QTextBrowser()
@@ -101,20 +102,7 @@ class TextResponseHandler:
         parent.copy_button.setIcon(QIcon.fromTheme("edit-copy"))
         parent.show_text_button.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         parent.copy_button.setToolTip("Copy to clipboard")
-        parent.copy_button.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {COLORS["primary"]};
-                color: {COLORS["white"]};
-                border: none;
-                border-radius: 15px;
-                padding: 8px;
-                min-width: 30px;
-                max-width: 30px;
-            }}
-            QPushButton:hover {{
-                background-color: {COLORS["primary-lighter"]};
-            }}
-        """)
+        parent.copy_button.setStyleSheet(self.default_copy_button_style())
         parent.copy_button.clicked.connect(lambda: self.copy_to_clipboard(parent))
         parent.copy_button.setVisible(False)
         buttons_layout.addWidget(parent.copy_button)
@@ -124,8 +112,6 @@ class TextResponseHandler:
     def copy_to_clipboard(self, parent):
         clipboard = QApplication.clipboard()
         clipboard.setText(parent.current_response)
-
-        original_style = parent.copy_button.styleSheet()
 
         parent.copy_button.setStyleSheet(f"""
             QPushButton {{
@@ -144,9 +130,25 @@ class TextResponseHandler:
 
         self.copy_thread = CopyThread()
         self.copy_thread.finished.connect(
-            lambda: parent.copy_button.setStyleSheet(original_style)
+            lambda: parent.copy_button.setStyleSheet(self.default_copy_button_style())
         )
         self.copy_thread.start()
+
+    def default_copy_button_style(self):
+        return f"""
+            QPushButton {{
+                background-color: {COLORS["primary"]};
+                color: {COLORS["white"]};
+                border: none;
+                border-radius: 15px;
+                padding: 8px;
+                min-width: 30px;
+                max-width: 30px;
+            }}
+            QPushButton:hover {{
+                background-color: {COLORS["primary-lighter"]};
+            }}    
+        """    
 
     def format_markdown(self, text):
         html_content = markdown.markdown(
