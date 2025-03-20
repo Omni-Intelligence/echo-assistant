@@ -12,13 +12,16 @@ from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QThread, pyqtSignal
 
 class AudioManager:
-    def __init__(self, api_service):
+    def __init__(self):
         self.is_recording = False
         self.temp_file = None
         self.system = platform.system()
+        self.playback_thread = None
+
         self.max_duration = 120  
         self.recording_start_time = None
         self.sample_rate = 44100
+
         self.logger = logging.getLogger(__name__)
         logging.basicConfig(level=logging.DEBUG)
 
@@ -86,6 +89,18 @@ class AudioManager:
 
         threading.Timer(self.max_duration, self.stop_recording).start()
 
+    def stop_playback(self):
+        """Stop current audio playback"""
+        if self.playback_thread and self.playback_thread.isRunning():
+            if self.system == "Linux":
+                subprocess.run(["pkill", "-f", "ffplay"])
+            elif self.system == "Windows":
+                sd.stop()
+            elif self.system == "Darwin":
+                subprocess.run(["pkill", "-f", "afplay"])
+            self.playback_thread.terminate()
+            self.playback_thread.wait()    
+
     def stop_recording(self):
         """Stop recording and return the temporary file path"""
         if not self.is_recording:
@@ -143,6 +158,7 @@ class PlaybackThread(QThread):
         super().__init__(parent)
         self.system = system
         self.audio_path = audio_path
+        self.parent = parent
 
     def run(self):
         try:
@@ -158,5 +174,12 @@ class PlaybackThread(QThread):
                 subprocess.run(["afplay", self.audio_path], check=True)
             self.finished.emit()
         except Exception as e:
-            self.error.emit(str(e))            
+            self.error.emit(str(e))  
+        finally:
+            self.parent.assistant_button.set_processing(False)
+            self.parent.assistant_button.set_answering(False)
+            self.parent.instruction_label.setText("Press mic button or Ctrl+Space to start")
+            self.parent.voice_selector.setEnabled(True)
+            self.parent.voice_selector.setVisible(True)
+            self.finished.emit()              
     

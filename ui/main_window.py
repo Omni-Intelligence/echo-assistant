@@ -112,6 +112,7 @@ class MainWindow(QMainWindow):
             self.stop_recording()
 
     def start_recording(self):
+        self.audio_manager.stop_playback()
         self.trh.reset(self)
         self.assistant_button.set_recording(True)
         self.instruction_label.setText(
@@ -129,15 +130,8 @@ class MainWindow(QMainWindow):
         self.instruction_label.setText("Processing your request...")
         QApplication.processEvents()
 
-        try:
-            audio_data = self.audio_manager.stop_recording()
-            self.process_audio(audio_data)
-        finally:
-            self.voice_selector.setEnabled(True)
-            self.voice_selector.setVisible(True)
-            self.assistant_button.set_processing(False)
-            self.assistant_button.set_answering(False)
-            self.instruction_label.setText("Press mic button or Ctrl+Space to start")
+        audio_data = self.audio_manager.stop_recording()
+        self.process_audio(audio_data)
 
     def process_audio(self, audio_data):
         try:

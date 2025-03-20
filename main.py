@@ -10,8 +10,7 @@ def main():
     app = QApplication(sys.argv)
     configure_logging()
     api_service = ApiService()
-
-    audio_manager = AudioManager(api_service)
+    audio_manager = AudioManager()
     ai_interface = AIInterface(api_service)
     window = MainWindow(audio_manager, ai_interface)
     window.show()
