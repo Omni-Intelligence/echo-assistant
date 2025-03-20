@@ -128,8 +128,8 @@ class AudioManager:
     def play_response(self, audio_path, parent):
         """Play audio file using platform-specific methods"""
 
-        parent.assistant_button.set_processing(False)
-        parent.assistant_button.set_answering(True)
+        parent.button.set_processing(False)
+        parent.button.set_answering(True)
         parent.instruction_label.setText("Answering...")
         QApplication.processEvents() 
 
@@ -164,7 +164,15 @@ class PlaybackThread(QThread):
         try:
             if self.system == "Linux":
                 subprocess.run(
-                    ["ffplay", "-nodisp", "-autoexit", self.audio_path], check=True
+                    [
+                        "ffplay",
+                        "-nodisp",
+                        "-autoexit",
+                        "-loglevel",
+                        "error",
+                        self.audio_path,
+                    ],
+                    check=True,
                 )
             elif self.system == "Windows":
                 data, samplerate = sf.read(self.audio_path)
@@ -176,10 +184,13 @@ class PlaybackThread(QThread):
         except Exception as e:
             self.error.emit(str(e))  
         finally:
-            self.parent.assistant_button.set_processing(False)
-            self.parent.assistant_button.set_answering(False)
+            self.parent.button.set_processing(False)
+            self.parent.button.set_answering(False)
             self.parent.instruction_label.setText("Press mic button or Ctrl+Space to start")
-            self.parent.voice_selector.setEnabled(True)
-            self.parent.voice_selector.setVisible(True)
+
+            print('AM: ' + self.parent.__class__.__name__)
+            if self.parent.__class__.__name__ == "EchoTab":
+                self.parent.voice_selector.setEnabled(True)
+                self.parent.voice_selector.setVisible(True)
             self.finished.emit()              
     

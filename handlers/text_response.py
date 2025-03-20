@@ -21,7 +21,7 @@ class TextResponseHandler:
         parent.show_text_button.setText("Show as text")
         parent.response_text.setVisible(False)
         parent.is_expanded = False
-        parent.setFixedSize(300, 400)
+        parent.main_window.setFixedSize(300, 400)
         parent.copy_button.setStyleSheet(self.default_copy_button_style())
 
     def response_text_setup(self, parent, layout):
@@ -165,13 +165,13 @@ class TextResponseHandler:
         parent.is_expanded = not parent.is_expanded
 
         if parent.is_expanded:
-            parent.setFixedSize(300, 600)
+            parent.main_window.setFixedSize(300, 600)
             html_content = self.format_markdown(parent.current_response)
             parent.response_text.setHtml(html_content)
             parent.response_text.setVisible(True)
             parent.show_text_button.setText("Hide text")
         else:
-            parent.setFixedSize(300, 400)
+            parent.main_window.setFixedSize(300, 400)
             parent.response_text.setVisible(False)
             parent.show_text_button.setText("Show as text")
 

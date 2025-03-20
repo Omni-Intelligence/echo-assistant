@@ -18,7 +18,7 @@ class AIInterface:
         response = self._get_ai_response(audio_file, selected_voice)
         return response
 
-    def _speech_to_text(self, audio_file):
+    def process_audio(self, audio_file):
         import speech_recognition as sr
         self.recognizer = sr.Recognizer()
         try:
@@ -41,7 +41,7 @@ class AIInterface:
                 audio = f.read()
 
             audio_format = os.path.splitext(file_path)[1].lower().lstrip(".")
-            print("audio format: ", audio_format)
+            print("AII - audio format: ", audio_format)
 
             response = client.chat.completions.create(
                 model="gpt-4o-mini-audio-preview",  
@@ -68,7 +68,7 @@ class AIInterface:
             audio = response.choices[0].message.audio.data
             text = response.choices[0].message.audio.transcript   
 
-            print(text, temp_audio_path)
+            print('\nAI output: ' + text, '\n\nAudio path: ' + temp_audio_path)
 
             with open(temp_audio_path, "wb") as f:
                 f.write(base64.b64decode(audio))
