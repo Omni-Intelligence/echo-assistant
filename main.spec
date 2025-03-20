@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('.env', '.'), ('resources', 'resources')],
+    datas=[('.env', '.'), ('resources', 'resources'), ('icon.ico', '.')],
     hiddenimports=['sounddevice', 'soundfile', 'PIL', 'PIL._imaging'],
     hookspath=[],
     hooksconfig={},

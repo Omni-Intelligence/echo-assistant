@@ -213,7 +213,11 @@ class VisionTab(QWidget):
                 )
                 QApplication.processEvents()
 
-                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
+                temp_file = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+                temp_path = temp_file.name
+                temp_file.close()
+
+                try:
                     screenshot.save(temp_file.name)
                     response = self.main_window.ai_interface.read_image(temp_file.name)
                     self.current_response = response
@@ -221,7 +225,13 @@ class VisionTab(QWidget):
                     self.text_display.clear()
                     self.text_display.setHtml(html_content)
                     self.copy_button.setVisible(True)
-                    os.unlink(temp_file.name)
+                finally:
+                    try:
+                        if os.path.exists(temp_path):
+                            os.unlink(temp_path)
+                    except Exception as e:
+                        print(f"Failed to delete temporary file: {e}")
+
             else:
                 self.text_display.setHtml("<p>Screenshot cancelled</p>")        
 
