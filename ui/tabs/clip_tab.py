@@ -22,10 +22,10 @@ class ClipTab(BaseTab):
     def process_audio(self, audio_data):
         try:
             response = self.main_window.ai_interface.process_audio(audio_data)
-            self.text_handler.update_response(self, response["text"])
+            self.text_handler.update_response(self, response)
             self.button.set_processing(False)
             self.instruction_label.setText(
-                "Press mic button or Ctrl+Space to start"
+                "The text was added to your clipboard!"
             )
         except Exception as e:
             self.instruction_label.setText("Error processing dictation")

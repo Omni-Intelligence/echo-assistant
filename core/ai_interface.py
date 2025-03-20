@@ -6,30 +6,27 @@ from openai import OpenAI
 
 class AIInterface:
     def __init__(self, api_service):
-        self.recognizer = None
         self.api_key = api_service.api_key
         self.logger = logging.getLogger(__name__)
 
-    def process_command(self, audio_file, selected_voice):
-        # text = self._speech_to_text(audio_file)
-        # if not text:
-        #     return "Sorry, I couldn't understand that."
-
-        response = self._get_ai_response(audio_file, selected_voice)
-        return response
-
-    def process_audio(self, audio_file):
-        import speech_recognition as sr
-        self.recognizer = sr.Recognizer()
+    def process_audio(self, file_path):
         try:
-            with sr.AudioFile(audio_file) as source:
-                audio = self.recognizer.record(source)
-                return self.recognizer.recognize_google(audio)
+            client = OpenAI(api_key=self.api_key)
+            
+            with open(file_path, "rb") as audio:
+                transcript = client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio,
+                    response_format="text"
+                )
+                
+            return transcript
+            
         except Exception as e:
-            print(f"Error in speech recognition: {e}")
-            return None
+            self.logger.error(f"Error transcribing audio: {str(e)}")
+            return "Sorry, I encountered an error while transcribing your audio."
 
-    def _get_ai_response(self, file_path, voice="ballad"):
+    def speak(self, file_path, voice="ballad"):
         try: 
             client = OpenAI(api_key=self.api_key)
 
@@ -41,7 +38,7 @@ class AIInterface:
                 audio = f.read()
 
             audio_format = os.path.splitext(file_path)[1].lower().lstrip(".")
-            print("AII - audio format: ", audio_format)
+            print("Started reading audio: ", audio_format)
 
             response = client.chat.completions.create(
                 model="gpt-4o-mini-audio-preview",  

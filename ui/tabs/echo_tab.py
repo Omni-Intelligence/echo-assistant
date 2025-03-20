@@ -65,7 +65,7 @@ class EchoTab(BaseTab):
             selected_voice = self.voice_selector.currentText()
             if selected_voice == "Select a voice":
                 selected_voice = "alloy"
-            response = self.main_window.ai_interface.process_command(
+            response = self.main_window.ai_interface.speak(
                 audio_data, selected_voice
             )
             self.text_handler.update_response(self, response["text"])

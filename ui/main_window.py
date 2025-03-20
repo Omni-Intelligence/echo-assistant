@@ -1,20 +1,7 @@
-from turtle import st
-from PyQt6.QtWidgets import (
-    QMainWindow,
-    QVBoxLayout,
-    QWidget,
-    QLabel,
-    QApplication,
-    QComboBox,
-    QTabWidget,
-)
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTabWidget
 from PyQt6.QtGui import QPalette, QColor
-from ui.voice_button import AssistantButton
-from ui.tabs.echo_tab import EchoTab
-from ui.tabs.clip_tab import ClipTab
+from ui.tabs import EchoTab, ClipTab, VisionTab
 from core import AudioManager, AIInterface, COLORS
-from handlers import TextResponseHandler, TimerCounterHandler
 
 
 class MainWindow(QMainWindow):
@@ -46,21 +33,23 @@ class MainWindow(QMainWindow):
                 background: {COLORS["secondary"]};
             }}
             QTabBar::tab {{
-                background: {COLORS["primary"]};
+                background: {COLORS["secondary"]};
                 color: {COLORS["white"]};
                 padding: 8px 20px;
                 border: none;
             }}
             QTabBar::tab:selected {{
-                background: {COLORS["secondary"]};
+                background: {COLORS["primary"]};
             }}
         """)
 
         self.echo_tab = EchoTab(self)
         self.clip_tab = ClipTab(self)
+        self.vision_tab = VisionTab(self)
 
         tab_widget.addTab(self.echo_tab, "Echo")
         tab_widget.addTab(self.clip_tab, "Clip")
+        tab_widget.addTab(self.vision_tab, "Vision")
         layout.addWidget(tab_widget)
 
         tab_widget.currentChanged.connect(self.on_tab_changed)
@@ -74,4 +63,4 @@ class MainWindow(QMainWindow):
     def on_tab_changed(self, index):
         current_tab = self.centralWidget().findChild(QTabWidget).widget(index)
         current_tab.setFocus()
-        current_tab.button.setFocus()        
+        current_tab.button.setFocus()
