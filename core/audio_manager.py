@@ -142,7 +142,7 @@ class AudioManager:
             except Exception as e:
                 print(f"Error removing audio file: {e}")
 
-        self.playback_thread = PlaybackThread(self.system, audio_path)
+        self.playback_thread = PlaybackThread(self.system, audio_path, parent)
         self.playback_thread.finished.connect(cleanup)
         self.playback_thread.error.connect(
             lambda e: self.logger.error(f"Error playing audio: {e}")

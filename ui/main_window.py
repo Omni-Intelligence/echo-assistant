@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
     QLabel,
     QApplication,
     QComboBox,
+    QTabWidget,
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPalette, QColor
@@ -39,7 +40,38 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        tab_widget = QTabWidget()
+        tab_widget.setStyleSheet(f"""
+            QTabWidget::pane {{
+                border: none;
+                background: {COLORS["secondary"]};
+            }}
+            QTabBar::tab {{
+                background: {COLORS["primary"]};
+                color: {COLORS["white"]};
+                padding: 8px 20px;
+                border: none;
+            }}
+            QTabBar::tab:selected {{
+                background: {COLORS["secondary"]};
+            }}
+        """)
+
+        assistant_tab = QWidget()
+        self.setup_assistant_tab(assistant_tab)
+        tab_widget.addTab(assistant_tab, "Echo")
+
+        dictate_tab = QWidget()
+        self.setup_dictate_tab(dictate_tab)
+        tab_widget.addTab(dictate_tab, "Clip")
+
+        layout.addWidget(tab_widget)
+
+    def setup_assistant_tab(self, tab):
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(20, 20, 20, 20)  
 
         self.instruction_label = QLabel("Press mic button or Ctrl+Space to start")
         self.instruction_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -60,7 +92,7 @@ class MainWindow(QMainWindow):
         layout.addStretch()
 
         self.trh.response_text_setup(self, layout)
-        self.timer.setup_timer_counter(layout)
+        self.timer.setup_timer_counter(layout)  
 
         self.voice_selector = QComboBox()
         self.voice_selector.addItem("Select a voice")
@@ -94,6 +126,7 @@ class MainWindow(QMainWindow):
                 image: none;
             }}
         """)
+
         layout.addWidget(self.voice_selector)
 
         self.assistant_button.clicked.connect(self.toggle_recording)
@@ -102,8 +135,36 @@ class MainWindow(QMainWindow):
         def focusChanged(old, new):
             if new not in [self.assistant_button, None]:
                 self.assistant_button.setFocus()
-    
+
         QApplication.instance().focusChanged.connect(focusChanged)
+
+    def setup_dictate_tab(self, tab):
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        self.dictate_label = QLabel("Press mic button or Ctrl+Space to start dictation")
+        self.dictate_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.dictate_label.setStyleSheet(f"""
+            QLabel {{
+                color: {COLORS["white"]};
+                font-size: 12px;
+                margin-bottom: 10px;
+            }}
+        """)
+        layout.addWidget(self.dictate_label)
+
+        layout.addStretch()
+
+        self.dictate_button = AssistantButton()
+        layout.addWidget(self.dictate_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        layout.addStretch()
+
+        # self.dictate_text = self.trh.create_text_area()
+        # layout.addWidget(self.dictate_text)
+
+        self.dictate_timer = TimerCounterHandler(self)
+        self.dictate_timer.setup_timer_counter(layout)    
 
     def toggle_recording(self):
         if not self.audio_manager.is_recording:
