@@ -25,6 +25,38 @@ class AIInterface:
         except Exception as e:
             self.logger.error(f"Error transcribing audio: {str(e)}")
             return "Sorry, I encountered an error while transcribing your audio."
+        
+    def read_image(self, image_path):
+        try:
+            client = OpenAI(api_key=self.api_key)
+            
+            with open(image_path, "rb") as image_file:
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "Please analyze this image and explain what you see. Include any relevant suggestions or explanations."
+                                },
+                                {
+                                    "type": "image_url",
+                                    "image_url": {
+                                        "url": f"data:image/jpeg;base64,{base64.b64encode(image_file.read()).decode('utf-8')}"
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                )
+                
+            return response.choices[0].message.content
+            
+        except Exception as e:
+            self.logger.error(f"Error analyzing image: {str(e)}")
+            return "Sorry, I encountered an error while analyzing the image."    
 
     def speak(self, file_path, voice="ballad"):
         try: 
